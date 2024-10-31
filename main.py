@@ -14,12 +14,15 @@ class HtmlToMarkdownConverter:
         self.logger.info(f"Initialized converter with input_dir: {
                          input_dir}, output_dir: {output_dir}")
 
-    def get_input_folders(self) -> Iterator[Path]:
-        """Get all folders from the input directory."""
-        self.logger.debug(f"Scanning for folders in {self.input_dir}")
-        folders = [item for item in self.input_dir.iterdir() if item.is_dir()]
-        self.logger.info(f"Found {len(folders)} folders to process")
-        return iter(folders)
+    def get_input_items(self) -> Iterator[Path]:
+        """Get all folders and HTML files from the input directory."""
+        self.logger.debug(f"Scanning for items in {self.input_dir}")
+        items = [
+            item for item in self.input_dir.iterdir()
+            if item.is_dir() or (item.is_file() and item.suffix.lower() == '.html')
+        ]
+        self.logger.info(f"Found {len(items)} items to process")
+        return iter(items)
 
     def process_html_file(self, file_path: Path, output_folder: Path) -> None:
         """Convert a single HTML file to markdown and save it."""
@@ -51,41 +54,51 @@ class HtmlToMarkdownConverter:
         self.logger.info("="*50)
 
         try:
-            # Process each folder in input directory
-            for folder in self.get_input_folders():
-                folder_name = folder.name
-                self.logger.info("-"*30)
-                self.logger.info(f"Processing folder: {folder_name}")
-                self.logger.info("-"*30)
+            # Process each item (folder or file) in input directory
+            for item in self.get_input_items():
+                if item.is_dir():
+                    # Process folder
+                    folder_name = item.name
+                    self.logger.info("-"*30)
+                    self.logger.info(f"Processing folder: {folder_name}")
+                    self.logger.info("-"*30)
 
-                # Create output folder if it doesn't exist
-                output_folder = self.output_dir / folder_name
-                if not output_folder.exists():
-                    self.logger.debug(
-                        f"Creating output folder: {output_folder}")
-                    output_folder.mkdir(parents=True, exist_ok=True)
-                else:
-                    self.logger.debug(
-                        f"Output folder already exists: {output_folder}")
-
-                # Count files for progress tracking
-                files = list(folder.iterdir())
-                total_files = len(files)
-                processed_files = 0
-                html_files = 0
-
-                # Process each file in the folder
-                for file_path in files:
-                    if file_path.is_file():
-                        processed_files += 1
-                        if file_path.suffix.lower() == '.html':
-                            html_files += 1
-                        self.process_html_file(file_path, output_folder)
+                    # Create output folder if it doesn't exist
+                    output_folder = self.output_dir / folder_name
+                    if not output_folder.exists():
                         self.logger.debug(
-                            f"Progress: {processed_files}/{total_files} files processed")
+                            f"Creating output folder: {output_folder}")
+                        output_folder.mkdir(parents=True, exist_ok=True)
+                    else:
+                        self.logger.debug(
+                            f"Output folder already exists: {output_folder}")
 
-                self.logger.info(f"Folder summary for {folder_name}: Total files processed: {
-                                 processed_files}, HTML files converted: {html_files}")
+                    # Process each file in the folder
+                    files = list(item.iterdir())
+                    total_files = len(files)
+                    processed_files = 0
+                    html_files = 0
+
+                    for file_path in files:
+                        if file_path.is_file():
+                            processed_files += 1
+                            if file_path.suffix.lower() == '.html':
+                                html_files += 1
+                            self.process_html_file(file_path, output_folder)
+                            self.logger.debug(
+                                f"Progress: {processed_files}/{total_files} files processed")
+
+                    self.logger.info(
+                        f"Folder summary for {folder_name}: "
+                        f"Total files processed: {processed_files}, "
+                        f"HTML files converted: {html_files}"
+                    )
+                else:
+                    # Process single HTML file
+                    self.logger.info("-"*30)
+                    self.logger.info(f"Processing file: {item.name}")
+                    self.logger.info("-"*30)
+                    self.process_html_file(item, self.output_dir)
 
             self.logger.info("="*50)
             self.logger.info("Conversion process completed successfully")
