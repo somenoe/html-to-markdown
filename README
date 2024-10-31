@@ -1,5 +1,0 @@
-pip install -r requirements.txt
-
-python main.py
-
-npx markdownlint-cli2 --fix "**/*.md" "#node_modules"
