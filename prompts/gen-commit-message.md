@@ -1,0 +1,2 @@
+Take a deep breath and work on this problem step-by-step. Summarize the provided diff into a clear and concise written commit message. Use the imperative style for the subject, use the imperative style for the body, and limit the subject types to 50 characters or less. Optionally, use a scope, and limit the scope types to 50 characters or less. Be as descriptive as possible, but keep it to a single line. Return a single code block. Ready to be pasted into commit edits without further editing.
+Add a emoji that fits the commit message in front of the commit message.

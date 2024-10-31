@@ -1,0 +1,11 @@
+1. Type Annotations with `mypy`
+    - Use type annotations for readability and bug reduction. Break down complex types into reusable `TypedDict` or `NamedTuple` definitions.
+    - Regularly run `mypy` for type correctness and early issue detection.
+2. Readable, Descriptive Naming
+    - Use clear, descriptive names for variables, functions, and classes. Balance brevity and clarity.
+3. Avoid Magic Numbers and Strings
+    - Replace "magic" values with named constants or `Enum` members for self-documenting code. Store constants in a dedicated configuration file or module.
+4. Modularize Code for Maintainability
+    - Keep functions short and focused. Break down long or multi-tasking functions into smaller ones. Organize code into functional modules.
+5. Consistent Error Handling
+    - Use `try`-`except` blocks consistently, catching specific exceptions with informative error messages. Utilize custom exceptions for domain-specific errors.
